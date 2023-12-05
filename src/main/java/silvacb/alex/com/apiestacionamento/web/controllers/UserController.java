@@ -2,6 +2,7 @@ package silvacb.alex.com.apiestacionamento.web.controllers;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,13 +41,13 @@ public class UserController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserResponseDTO> create(@RequestBody UserCreateDTO createDto){
+	public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO createDto){
 		User createUser = userService.save(UserMapper.toUser(createDto));
 		return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(createUser));
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updatePassword(@PathVariable Long id, @RequestBody UserPasswordDTO dto){
+	public ResponseEntity<String> updatePassword(@PathVariable Long id, @Valid @RequestBody UserPasswordDTO dto){
 		userService.editPassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
 
 		return ResponseEntity.ok().body("Senha atualizada com sucesso.");
