@@ -27,19 +27,19 @@ import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserResponseDTO;
 public class UserController {
 	
 	private final UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<UserResponseDTO>> findByAll(){
+        List<User> userAll = userService.searchAll();
+        return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toListDto(userAll));
+    }
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id ){
 		User userId = userService.searchById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toDto(userId));
 	}
-	
-	@GetMapping
-	public ResponseEntity<List<UserResponseDTO>> findByAll(){
-		List<User> userAll = userService.searchAll();
-		return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toListDto(userAll));
-	}
-	
+
 	@PostMapping
 	public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO createDto){
 		User createUser = userService.save(UserMapper.toUser(createDto));
