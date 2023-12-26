@@ -3,6 +3,7 @@ package silvacb.alex.com.apiestacionamento.services;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,7 @@ import silvacb.alex.com.apiestacionamento.repository.UserRepository;
 public class UserService {
 	
 	private final UserRepository userRepository;
-
+	private final PasswordEncoder passwordEncoder;
 
 	
 	@Transactional(readOnly = true)
@@ -36,6 +37,7 @@ public class UserService {
 	@Transactional
 	public User save(User user) {
 		try {
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			return userRepository.save(user);
 		} catch (DataIntegrityViolationException ex){
 			throw new UserNameUniqueViolationException(String.format("Usuario '%s' já cadastrado",
@@ -51,11 +53,24 @@ public class UserService {
 		}
 
 		User updatePassword = searchById(id);
-		if (!updatePassword.getPassword().equals(currentPassword))
+		if (!passwordEncoder.matches(currentPassword, updatePassword.getPassword()))
 		{
 			throw new PasswordInvalidException("Senha não confere.");
 		}
 
-		updatePassword.setPassword(newPassword);
+		updatePassword.setPassword(passwordEncoder.encode( newPassword));
+	}
+
+	@Transactional(readOnly = true)
+    public User searchUsername(String username) {
+		return userRepository.findByUsername(username).orElseThrow(
+				()-> new EntityNotFoundException(String.format("Usuário com username '%s' não encontrado.", username)));
+    }
+
+	@Transactional(readOnly = true)
+	public User.Role searchRoleByUsername(String username) {
+		return userRepository.findRoleByUsername(username);
+
+
 	}
 }
