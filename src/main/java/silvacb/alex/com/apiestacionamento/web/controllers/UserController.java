@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +60,7 @@ public class UserController {
 			}
 	)
 	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN') OR ( hasRole('CLIENT') AND #id == authentication.principal.id)")
 	public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id ){
 		User userId = userService.searchById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toDto(userId));
