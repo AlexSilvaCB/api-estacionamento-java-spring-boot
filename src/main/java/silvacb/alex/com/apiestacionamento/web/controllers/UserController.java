@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -39,22 +40,29 @@ public class UserController {
 	
 	private final UserService userService;
 
-	@Operation(summary = "Retorna uma lista de usuários.", description = "Lista todos os usuários cadastrados.",
+	@Operation(summary = "Retorna uma lista de usuários.", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN:CLIENT.",
+			security = @SecurityRequirement(name = "security"),
 			responses = {
 			@ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
-				content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDTO.class))))
+				content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDTO.class)))),
+			@ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar este recurso.",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
 			}
 	)
     @GetMapping
+	@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> findByAll(){
         List<User> userAll = userService.searchAll();
         return ResponseEntity.status(HttpStatus.OK).body(UserMapper.toListDto(userAll));
     }
 
-	@Operation(summary = "Localizar usuário pelo Id.",description = "Recurso localizar usuário pelo Id.",
+	@Operation(summary = "Localizar usuário pelo Id.",description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN:CLIENT.",
+			security = @SecurityRequirement(name = "security"),
 			responses = {
 			@ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDTO.class))),
+			@ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar este recurso.",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
 			@ApiResponse(responseCode = "404", description = "Recurso não encontrado",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
 			}
@@ -82,17 +90,21 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(createUser));
 	}
 
-	@Operation(summary = "Atualizar senha.", description = "Atualizar senha.",
+	@Operation(summary = "Atualizar senha.", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN:CLIENT.",
+			security = @SecurityRequirement(name = "security"),
 			responses = {
 			@ApiResponse(responseCode = "200", description = "Senha atualizada com sucesso",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
 			@ApiResponse(responseCode = "400", description = "Senha não confere",
+				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+			@ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar este recurso.",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
 			@ApiResponse(responseCode = "404", description = "Recurso não encontrado",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
 			}
 	)
 	@PatchMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
 	public ResponseEntity<String> updatePassword(@PathVariable Long id, @Valid @RequestBody UserPasswordDTO dto){
 		userService.editPassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
 
