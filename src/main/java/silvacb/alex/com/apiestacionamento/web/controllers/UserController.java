@@ -99,7 +99,7 @@ public class UserController {
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
 			@ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar este recurso.",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-			@ApiResponse(responseCode = "404", description = "Recurso não encontrado",
+			@ApiResponse(responseCode = "422", description = "Recurso não processado por dados de entrada inválidos",
 				content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
 			}
 	)
