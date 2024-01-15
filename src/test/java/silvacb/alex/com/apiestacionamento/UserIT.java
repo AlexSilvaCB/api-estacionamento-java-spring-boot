@@ -8,8 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import silvacb.alex.com.apiestacionamento.web.dto.UserCreateDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserPasswordDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserResponseDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserPasswordDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserResponseDTO;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 
 import java.util.List;

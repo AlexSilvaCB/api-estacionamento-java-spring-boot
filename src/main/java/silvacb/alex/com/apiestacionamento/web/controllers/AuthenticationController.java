@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import silvacb.alex.com.apiestacionamento.jwt.JwtToken;
 import silvacb.alex.com.apiestacionamento.jwt.JwtUserDetailsService;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserLoginDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserResponseDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserLoginDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserResponseDTO;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 
 @Tag(name = "Autenticação", description = "Recurso para proceder com a autenticação na API")

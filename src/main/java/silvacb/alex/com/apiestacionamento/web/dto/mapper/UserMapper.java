@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import silvacb.alex.com.apiestacionamento.entity.User;
 import silvacb.alex.com.apiestacionamento.web.dto.UserCreateDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserResponseDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;

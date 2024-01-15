@@ -1,4 +1,4 @@
-package silvacb.alex.com.apiestacionamento.web.dto.mapper;
+package silvacb.alex.com.apiestacionamento.web.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

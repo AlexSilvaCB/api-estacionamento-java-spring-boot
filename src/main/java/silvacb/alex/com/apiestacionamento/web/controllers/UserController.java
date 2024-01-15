@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,8 +26,8 @@ import silvacb.alex.com.apiestacionamento.entity.User;
 import silvacb.alex.com.apiestacionamento.services.UserService;
 import silvacb.alex.com.apiestacionamento.web.dto.UserCreateDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserMapper;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserPasswordDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserResponseDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserPasswordDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserResponseDTO;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 
 @Tag(name = "Users",
@@ -85,7 +84,7 @@ public class UserController {
 			}
 	)
 	@PostMapping
-	public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO createDto){
+	public ResponseEntity<UserResponseDTO> create(@RequestBody @Valid UserCreateDTO createDto){
 		User createUser = userService.save(UserMapper.toUser(createDto));
 		return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(createUser));
 	}

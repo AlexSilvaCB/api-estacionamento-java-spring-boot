@@ -3,8 +3,7 @@ package silvacb.alex.com.apiestacionamento;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import silvacb.alex.com.apiestacionamento.jwt.JwtToken;
-import silvacb.alex.com.apiestacionamento.web.dto.UserCreateDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.mapper.UserLoginDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserLoginDTO;
 
 import java.util.function.Consumer;
 
