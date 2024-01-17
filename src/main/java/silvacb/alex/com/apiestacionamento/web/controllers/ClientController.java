@@ -12,16 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import silvacb.alex.com.apiestacionamento.entity.Client;
 import silvacb.alex.com.apiestacionamento.jwt.JwtUserDetails;
 import silvacb.alex.com.apiestacionamento.services.ClientService;
 import silvacb.alex.com.apiestacionamento.services.UserService;
 import silvacb.alex.com.apiestacionamento.web.dto.ClientCreateDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.ClientResponseDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.UserResponseDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.ClientMapper;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 
@@ -57,4 +55,25 @@ public class ClientController {
         cliService.save(createClient);
         return ResponseEntity.status(HttpStatus.CREATED).body(ClientMapper.toDto(createClient));
     }
+
+    @Operation(summary = "Localizar cliente pelo Id.",description = "Recurso para localizar um cliente pelo ID. " +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = ClientResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Cliente não encontrado",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
+                            content = @Content(mediaType = " application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClientResponseDTO> findById(@PathVariable Long id){
+        Client cliId = cliService.searchById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ClientMapper.toDto(cliId));
+    }
+
+
 }

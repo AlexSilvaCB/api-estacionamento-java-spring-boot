@@ -1,5 +1,6 @@
 package silvacb.alex.com.apiestacionamento.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -14,14 +15,19 @@ public class ClientService {
 
     private final ClientRepository cliRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Client save(Client client) {
         try {
             return cliRepository.save(client);
         } catch (DataIntegrityViolationException ex) {
             throw new CpfUniqueViolationException(
-                    String.format("CPF '%s' não pode ser cadastrado, já existe no sistema", client.getCpf())
-            );
+                    String.format("CPF '%s' não pode ser cadastrado, já existe no sistema", client.getCpf()));
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Client searchById(Long id){
+            return cliRepository.findById(id).orElseThrow(
+                    ()-> new EntityNotFoundException(String.format("Cliente id= %s não encontrado.", id)));
     }
 }

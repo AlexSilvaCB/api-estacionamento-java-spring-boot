@@ -39,7 +39,7 @@ public class ClientsIT {
     }
 
     @Test
-    public void criarCliente_ComCpfJaCadastrado_RetornarClienteComStatus409() {
+    public void criarCliente_ComCpfJaCadastrado_RetornarClienteErrorMessageStatus409() {
         ErrorMessage responseError = testClient
                 .post()
                 .uri("/api/v1/clients")
@@ -56,7 +56,7 @@ public class ClientsIT {
     }
 
     @Test
-    public void criarCliente_ComDadosInvalidos_RetornarClienteComStatus409() {
+    public void criarCliente_ComDadosInvalidos_RetornarClienteErrorMessageStatus422() {
         ErrorMessage responseError = testClient
                 .post()
                 .uri("/api/v1/clients")
@@ -115,7 +115,7 @@ public class ClientsIT {
     }
 
     @Test
-    public void criarCliente_ComPerfilAdm_RetornarClienteComStatus403() {
+    public void criarCliente_ComPerfilAdm_RetornarClienteErrorMessageStatus403() {
         ErrorMessage responseError = testClient
                 .post()
                 .uri("/api/v1/clients")
@@ -130,5 +130,7 @@ public class ClientsIT {
         org.assertj.core.api.Assertions.assertThat(responseError).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseError.getStatus()).isEqualTo(403);
     }
+
+
 
 }
