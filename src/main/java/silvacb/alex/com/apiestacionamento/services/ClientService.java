@@ -39,4 +39,8 @@ public class ClientService {
         return cliRepository.findAllPageable(pageable);
     }
 
+    @Transactional(readOnly = true)
+    public Client searchUserId(Long id) {
+        return cliRepository.findByUsersId(id);
+    }
 }
