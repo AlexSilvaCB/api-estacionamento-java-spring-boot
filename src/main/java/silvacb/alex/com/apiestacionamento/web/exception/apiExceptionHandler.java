@@ -10,10 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import silvacb.alex.com.apiestacionamento.exception.CpfUniqueViolationException;
-import silvacb.alex.com.apiestacionamento.exception.EntityNotFoundException;
-import silvacb.alex.com.apiestacionamento.exception.PasswordInvalidException;
-import silvacb.alex.com.apiestacionamento.exception.UserNameUniqueViolationException;
+import silvacb.alex.com.apiestacionamento.exception.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -39,7 +36,8 @@ public class apiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
-    @ExceptionHandler({UserNameUniqueViolationException.class, CpfUniqueViolationException.class})
+    @ExceptionHandler({UserNameUniqueViolationException.class, CpfUniqueViolationException.class,
+            CodigoUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> dataIntegrityViolationException(RuntimeException ex,
                                                                         HttpServletRequest request){
         log.error("Api error - ", ex);
