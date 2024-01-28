@@ -1,6 +1,5 @@
 package silvacb.alex.com.apiestacionamento.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import silvacb.alex.com.apiestacionamento.entity.Client;
 import silvacb.alex.com.apiestacionamento.exception.CpfUniqueViolationException;
+import silvacb.alex.com.apiestacionamento.exception.EntityNotFoundException;
 import silvacb.alex.com.apiestacionamento.repository.ClientRepository;
 import silvacb.alex.com.apiestacionamento.repository.projection.ClientProjection;
 
@@ -43,4 +43,13 @@ public class ClientService {
     public Client searchUserId(Long id) {
         return cliRepository.findByUsersId(id);
     }
+
+    @Transactional(readOnly = true)
+    public Client buscarPorCpf(String cpf) {
+        return cliRepository.findByCpf(cpf).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Cliente com CPF '%s' não encontrado", cpf))
+        );
+    }
+
+
 }

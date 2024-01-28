@@ -9,6 +9,8 @@ import silvacb.alex.com.apiestacionamento.exception.CodigoUniqueViolationExcepti
 import silvacb.alex.com.apiestacionamento.exception.EntityNotFoundException;
 import silvacb.alex.com.apiestacionamento.repository.VacancyRepository;
 
+import static silvacb.alex.com.apiestacionamento.entity.Vacancy.StatusVacancy.LIVRE;
+
 @RequiredArgsConstructor
 @Service
 public class VacancyService {
@@ -32,5 +34,13 @@ public class VacancyService {
                 () -> new EntityNotFoundException(String.format("Vaga com código '%s' não foi encontrada", code))
         );
     }
+
+    @Transactional(readOnly = true)
+    public Vacancy buscarPorVagaLivre() {
+        return vacancyRepository.findFirstByStatus(LIVRE).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Nenhuma vaga livre foi encontrada")
+        ));
+    }
+
 
 }
