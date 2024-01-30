@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +26,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import silvacb.alex.com.apiestacionamento.entity.ClientVacancy;
 import silvacb.alex.com.apiestacionamento.jwt.JwtUserDetails;
 import silvacb.alex.com.apiestacionamento.repository.projection.ClientVacancyProjection;
+import silvacb.alex.com.apiestacionamento.services.ClientService;
 import silvacb.alex.com.apiestacionamento.services.ClientVacancyService;
+import silvacb.alex.com.apiestacionamento.services.JasperService;
 import silvacb.alex.com.apiestacionamento.services.ParkingService;
 import silvacb.alex.com.apiestacionamento.web.dto.PageableDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.ParkingCreateDTO;
@@ -33,6 +37,7 @@ import silvacb.alex.com.apiestacionamento.web.dto.mapper.ClientVacancyMapper;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.PageableMapper;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 
+import java.io.IOException;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
@@ -46,6 +51,8 @@ public class ParkingControllers {
 
     private final ParkingService parkingService;
     private final ClientVacancyService clientVacancyService;
+    private final ClientService clientService;
+    private final JasperService jasperService;
 
     @Operation(summary = "Operação de check-in", description = "Recurso para dar entrada de um veículo no estacionamento. " +
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
@@ -199,5 +206,32 @@ public class ParkingControllers {
         Page<ClientVacancyProjection> projection = clientVacancyService.buscarTodosPorUsuarioId(user.getId(), pageable);
         PageableDTO dto = PageableMapper.toDto(projection);
         return ResponseEntity.ok(dto);
+    }
+
+    @Operation(summary = "Relatório em PDF com os estacionamentos do cliente",
+            description = "Recurso para gerar um relatório com os estacionamentos do cliente. " +
+                    "Requisição exige uso de um bearer token.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso",
+                            content = @Content(mediaType = "application/pdf",
+                                    schema = @Schema(implementation = ParkingResponseDTO.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de ADMIN",
+                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @GetMapping("/relatorio")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<Void> getRelatorio(HttpServletResponse response, @AuthenticationPrincipal JwtUserDetails user) throws IOException {
+        String cpf = clientService.searchUserId(user.getId()).getCpf();
+        jasperService.addParams("CPF", cpf);
+
+        byte[] bytes = jasperService.gerarPdf();
+
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader("Content-disposition", "inline; filename=" + System.currentTimeMillis() + ".pdf");
+        response.getOutputStream().write(bytes);
+
+        return ResponseEntity.ok().build();
     }
 }
