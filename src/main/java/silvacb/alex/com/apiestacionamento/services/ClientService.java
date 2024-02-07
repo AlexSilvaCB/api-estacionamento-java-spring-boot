@@ -23,15 +23,14 @@ public class ClientService {
         try {
             return cliRepository.save(client);
         } catch (DataIntegrityViolationException ex) {
-            throw new CpfUniqueViolationException(
-                    String.format("CPF '%s' não pode ser cadastrado, já existe no sistema", client.getCpf()));
+            throw new CpfUniqueViolationException(client.getCpf());
         }
     }
 
     @Transactional(readOnly = true)
     public Client searchById(Long id){
             return cliRepository.findById(id).orElseThrow(
-                    ()-> new EntityNotFoundException(String.format("Cliente id= %s não encontrado.", id)));
+                    ()-> new EntityNotFoundException("Cliente", String.valueOf(id)));
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +46,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public Client buscarPorCpf(String cpf) {
         return cliRepository.findByCpf(cpf).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Cliente com CPF '%s' não encontrado", cpf))
+                () -> new EntityNotFoundException(String.format("Cliente", cpf))
         );
     }
 

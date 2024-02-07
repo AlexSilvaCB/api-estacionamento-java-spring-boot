@@ -7,12 +7,12 @@ import lombok.*;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class UserCreateDTO {
-    @NotBlank
-    @Email(regexp = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})$",
-            message = "Formato de e-mail inválido.")
+    @NotBlank(message = "{NotBlank.userCreateDTO.username}")
+    @Email(message = "{Email.userCreateDTO.username}",
+            regexp = "^[a-z0-9.+-]+@[a-z0-9.-]+\\.[a-z]{2,}$")
     private String username;
-    @NotBlank
-    @Size(min = 6, max = 6)
+    @NotBlank(message="{NotBlank.userCreateDTO.password}")
+    @Size(min = 6, max = 6, message="{Size.userCreateDTO.password}")
     private String password;
 
 }

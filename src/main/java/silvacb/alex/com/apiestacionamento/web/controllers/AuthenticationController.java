@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import silvacb.alex.com.apiestacionamento.exception.InvalidCredencialException;
 import silvacb.alex.com.apiestacionamento.jwt.JwtToken;
 import silvacb.alex.com.apiestacionamento.jwt.JwtUserDetailsService;
 import silvacb.alex.com.apiestacionamento.web.dto.UserLoginDTO;
@@ -59,9 +60,6 @@ public class AuthenticationController {
         } catch (AuthenticationException ex) {
             log.warn("Bad credentials from username '{}'", dto.getUsername());
         }
-        return ResponseEntity
-                .badRequest()
-                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, "Credenciais invalidas"));
-
+       throw new InvalidCredencialException(dto.getUsername());
     }
 }

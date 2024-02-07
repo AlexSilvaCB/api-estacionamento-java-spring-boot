@@ -9,19 +9,19 @@ import org.hibernate.validator.constraints.br.CPF;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ParkingCreateDTO {
 
-    @NotBlank
-    @Size(min = 8, max = 8)
-    @Pattern(regexp = "[A-Z]{3}-[0-9]{4}", message = "A placa do veículo deve seguir o padrão 'XXX-0000'")
+    @NotBlank(message = "{NotBlank.parkingCreateDTO.plate}")
+    @Size(min = 8, max = 8, message = "{Size.parkingCreateDTO.plate}")
+    @Pattern(regexp = "[A-Z]{3}-[0-9]{4}", message = "{Pattern.parkingCreateDTO.plate}")//A placa do veículo deve seguir o padrão 'XXX-0000'
     private String plate;
-    @NotBlank
+    @NotBlank(message = "{NotBlank.parkingCreateDTO.brand}")
     private String brand;
-    @NotBlank
+    @NotBlank(message = "{NotBlank.parkingCreateDTO.model}")
     private String model;
-    @NotBlank
+    @NotBlank(message = "{NotBlank.parkingCreateDTO.color}")
     private String color;
-    @NotBlank
-    @Size(min = 11, max = 11)
-    @CPF
+    @NotBlank(message = "{NotBlank.parkingCreateDTO.clientCpf}")
+    @Size(min = 11, max = 11, message = "{Size.parkingCreateDTO.clientCpf}")
+    @CPF(message = "CPF.parkingCreateDTO.clientCpf")
     private String clientCpf;
 
 

@@ -3,11 +3,11 @@ package silvacb.alex.com.apiestacionamento.exception;
 import lombok.Getter;
 
 @Getter
-public class UserNameUniqueViolationException extends RuntimeException {
+public class InvalidCredencialException extends RuntimeException {
 
     private String username;
-    public UserNameUniqueViolationException(String username) {
 
+    public InvalidCredencialException(String username){
         this.username = username;
     }
 }

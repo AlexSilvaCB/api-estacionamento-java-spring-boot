@@ -8,11 +8,11 @@ import lombok.*;
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class VacancyCreateDTO {
 
-    @NotBlank
-    @Size(min = 4, max = 4)
+    @NotBlank(message = "{NotBlank.vacancyCreateDTO.code}")
+    @Size(min = 4, max = 4, message = "{Size.vacancyCreateDTO.code}")
     private String code;
-    @NotBlank
-    @Pattern(regexp = "LIVRE|OCUPADA")
+    @NotBlank(message = "{NotBlank.vacancyCreateDTO.status}")
+    @Pattern(regexp = "LIVRE|OCUPADA", message = "{Pattern.vacancyCreateDTO.status}")
     private String status;
 
 }

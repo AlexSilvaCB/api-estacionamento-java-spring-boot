@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import silvacb.alex.com.apiestacionamento.entity.User;
 import silvacb.alex.com.apiestacionamento.exception.EntityNotFoundException;
+import silvacb.alex.com.apiestacionamento.exception.NewPasswordInvalidException;
 import silvacb.alex.com.apiestacionamento.exception.PasswordInvalidException;
 import silvacb.alex.com.apiestacionamento.exception.UserNameUniqueViolationException;
 import silvacb.alex.com.apiestacionamento.repository.UserRepository;
@@ -31,7 +32,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User searchById(Long id) {
 		return userRepository.findById(id).orElseThrow(
-				()-> new EntityNotFoundException(String.format("Usuário id= %s não encontrado.", id)));
+				()-> new EntityNotFoundException("Usuário",String.valueOf(id)));
 	}
 
 	@Transactional
@@ -40,8 +41,7 @@ public class UserService {
 			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			return userRepository.save(user);
 		} catch (DataIntegrityViolationException ex){
-			throw new UserNameUniqueViolationException(String.format("Usuario '%s' já cadastrado",
-					user.getUsername()));
+			throw new UserNameUniqueViolationException(user.getUsername());
 		}
 	}
 
@@ -49,13 +49,13 @@ public class UserService {
 	public void editPassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
 		if (!newPassword.equals(confirmPassword))
 		{
-			throw new PasswordInvalidException("Nova senha não confere com confirmação de senha.");
+			throw new NewPasswordInvalidException();
 		}
 
 		User updatePassword = searchById(id);
 		if (!passwordEncoder.matches(currentPassword, updatePassword.getPassword()))
 		{
-			throw new PasswordInvalidException("Senha não confere.");
+			throw new PasswordInvalidException();
 		}
 
 		updatePassword.setPassword(passwordEncoder.encode( newPassword));
@@ -64,7 +64,7 @@ public class UserService {
 	@Transactional(readOnly = true)
     public User searchUsername(String username) {
 		return userRepository.findByUsername(username).orElseThrow(
-				()-> new EntityNotFoundException(String.format("Usuário com username '%s' não encontrado.", username)));
+				()-> new EntityNotFoundException("Usuário", username));
     }
 
 	@Transactional(readOnly = true)
