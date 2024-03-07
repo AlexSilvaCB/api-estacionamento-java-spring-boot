@@ -9,15 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import silvacb.alex.com.apiestacionamento.exception.InvalidCredencialException;
 import silvacb.alex.com.apiestacionamento.jwt.JwtToken;
 import silvacb.alex.com.apiestacionamento.jwt.JwtUserDetailsService;
@@ -29,7 +26,7 @@ import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
 public class AuthenticationController {
 
     private final JwtUserDetailsService detailsService;
@@ -44,7 +41,7 @@ public class AuthenticationController {
                     @ApiResponse(responseCode = "422", description = "Campo(s) Inválido(s)",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    @PostMapping("/auth")
+    @PostMapping(path = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticate(@RequestBody @Valid UserLoginDTO dto, HttpServletRequest request) {
         log.info("Processo de autenticação pelo login {}", dto.getUsername());
 

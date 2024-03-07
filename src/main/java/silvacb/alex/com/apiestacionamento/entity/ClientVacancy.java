@@ -21,7 +21,6 @@ public class ClientVacancy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-   //gerar numero do recibo automaticamente
     @Column(name = "receipt_number", nullable = false, unique = true, length = 15)
     private String receipt;
     @Column(name = "plate", nullable = false, length = 8)

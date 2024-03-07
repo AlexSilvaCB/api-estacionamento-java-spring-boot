@@ -3,12 +3,11 @@ package silvacb.alex.com.apiestacionamento.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -21,11 +20,11 @@ public class JwtUtils {
     public static final String SECRET_KEY = "0123456789-0123456789-0123456789";
     public static final long EXPIRE_DAYS = 0;
     public static final long EXPIRE_HOURS = 0;
-    public static final long EXPIRE_MINUTES = 2;
+    public static final long EXPIRE_MINUTES = 30;
 
     private JwtUtils(){}
 
-    private static Key generateKey(){
+    private static SecretKey generateKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -40,11 +39,12 @@ public class JwtUtils {
         Date limit = toExpireDate(issuedAt);
 
         String token = Jwts.builder()
-                .setHeaderParam("typ", "JWT")
-                .setSubject(username)
-                .setIssuedAt(issuedAt)
-                .setExpiration(limit)
-                .signWith(generateKey(), SignatureAlgorithm.HS256)
+                .header().add("typ", "JWT")
+                .and()
+                .subject(username)
+                .issuedAt(issuedAt)
+                .expiration(limit)
+                .signWith(generateKey(), Jwts.SIG.HS256)
                 .claim("role", role)
                 .compact();
 
@@ -54,8 +54,8 @@ public class JwtUtils {
     private static Claims getClaimsFromToken(String token){
         try{
             return Jwts.parser()
-                    .setSigningKey(generateKey()).build()
-                    .parseClaimsJws(refactorToken(token)).getBody();
+                    .verifyWith(generateKey())
+                    .build().parseSignedClaims(refactorToken(token)).getPayload();
         }catch (JwtException ex){
             log.error(String.format("Token inválido %s", ex.getMessage()));
         }
@@ -69,8 +69,9 @@ public class JwtUtils {
     public static boolean isTokenValid(String token){
         try{
             Jwts.parser()
-                    .setSigningKey(generateKey()).build()
-                    .parseClaimsJws(refactorToken(token));
+                    .verifyWith(generateKey())
+                    .build().parseSignedClaims(refactorToken(token));
+
             return true;
         }catch (JwtException ex){
             log.error(String.format("Token inválido %s", ex.getMessage()));

@@ -1,5 +1,8 @@
 package silvacb.alex.com.apiestacionamento.config;
 
+import org.springframework.security.config.Customizer;
+import silvacb.alex.com.apiestacionamento.jwt.JwtAuthenticationEntryPoint;
+import silvacb.alex.com.apiestacionamento.jwt.JwtAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,34 +15,41 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import silvacb.alex.com.apiestacionamento.jwt.JwtAuthenticationEntryPoint;
-import silvacb.alex.com.apiestacionamento.jwt.JwtAuthorizationFilter;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @EnableMethodSecurity
 @EnableWebMvc
 @Configuration
 public class SpringSecurityConfig {
 
-    private static final String[] DOCUMENTATION_OPENAPI = {
-            "/docs/index.html",
-            "/docs-park.html", "/docs-park/**",
-            "/v3/api-docs/**",
-            "/swagger-ui-custom.html", "/swagger-ui.html", "/swagger-ui/**",
-            "/**.html", "/webjars/**", "/configuration/**", "/swagger-resources/**"
-    };
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         return http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .formLogin((form -> form.disable()))
+                .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"api/v1/users").permitAll()
-                        .requestMatchers(HttpMethod.POST,"api/v1/auth").permitAll()
-                        .requestMatchers(DOCUMENTATION_OPENAPI).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.POST,"/api/v1/users")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.POST,"/api/v1/auth")).permitAll()
+                        .requestMatchers(
+                                antMatcher("/v3/api-docs/**"),
+                                antMatcher("/swagger-ui-custom.html"),
+                                antMatcher("/swagger-ui.html"),
+                                antMatcher("/**.html"),
+                                antMatcher("/configuration/**"),
+                                antMatcher("/swagger-resources/**"),
+                                antMatcher("/docs-park.html"),
+                                antMatcher("/docs-park/**"),
+                                antMatcher("/swagger-ui.html"),
+                                antMatcher("/swagger-ui/**"),
+                                antMatcher("/webjars/**")
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -48,6 +58,11 @@ public class SpringSecurityConfig {
                 ).exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 ).build();
+    }
+
+    @Bean
+    public MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector).servletPath("/");
     }
 
     @Bean

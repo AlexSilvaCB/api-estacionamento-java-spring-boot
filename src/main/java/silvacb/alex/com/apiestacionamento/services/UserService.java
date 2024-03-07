@@ -46,7 +46,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public void editPassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
+	public User editPassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
 		if (!newPassword.equals(confirmPassword))
 		{
 			throw new NewPasswordInvalidException();
@@ -59,6 +59,7 @@ public class UserService {
 		}
 
 		updatePassword.setPassword(passwordEncoder.encode( newPassword));
+		return updatePassword;
 	}
 
 	@Transactional(readOnly = true)
