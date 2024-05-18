@@ -30,9 +30,7 @@ import silvacb.alex.com.apiestacionamento.services.ClientService;
 import silvacb.alex.com.apiestacionamento.services.ClientVacancyService;
 import silvacb.alex.com.apiestacionamento.services.JasperService;
 import silvacb.alex.com.apiestacionamento.services.ParkingService;
-import silvacb.alex.com.apiestacionamento.web.dto.PageableDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.ParkingCreateDTO;
-import silvacb.alex.com.apiestacionamento.web.dto.ParkingResponseDTO;
+import silvacb.alex.com.apiestacionamento.web.dto.*;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.ClientVacancyMapper;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.PageableMapper;
 import silvacb.alex.com.apiestacionamento.web.exception.ErrorMessage;
@@ -234,4 +232,64 @@ public class ParkingControllers {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Localizar os registros de estacionamentos do cliente por Data", description = "Localizar os " +
+            "registros de estacionamentos do cliente por Data. Requisição exige uso de um bearer token.",
+            security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(in = PATH, name = "data", description = "Data referente ao cliente a ser consultado",
+                            required = true
+                    ),
+                    @Parameter(in = QUERY, name = "page", description = "Representa a página retornada",
+                            content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))
+                    ),
+                    @Parameter(in = QUERY, name = "size", description = "Representa o total de elementos por página",
+                            content = @Content(schema = @Schema(type = "integer", defaultValue = "5"))
+                    ),
+                    @Parameter(in = QUERY, name = "sort", description = "Campo padrão de ordenação 'dataEntrada,asc'. ",
+                            array = @ArraySchema(schema = @Schema(type = "string", defaultValue = "dataEntrada,asc")),
+                            hidden = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso",
+                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = PageableDTO.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
+                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @GetMapping("/dateList/{date1}/{date2}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PageableDTO> getAllEstacionamentosPorData(@PathVariable String date1, @PathVariable String date2,
+                                                                    @Parameter(hidden = true) @PageableDefault(
+                                                                              size = 5, sort = "entryData",
+                                                                              direction = Sort.Direction.ASC) Pageable pageable) {
+
+        Page<ClientVacancyProjection> projection = clientVacancyService.buscarTodosPorUsuarioPorData(date1, date2, pageable);
+        PageableDTO dto = PageableMapper.toDto(projection);
+        return ResponseEntity.ok(dto);
+    }
+
+
+    @Operation(summary = "Gerar dados como soma e total de acessos relacionado aos 02 mêses de comparação solicitado.",
+            description = "Localizar os registros de estacionamentos do cliente por Data. Requisição exige uso de um bearer token.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso",
+                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ParkingResReportsDTO.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
+                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
+            })
+    @PostMapping("/date_chart")
+    @PreAuthorize("hasRole('ADMIN')") // tratamento de erro
+    public ResponseEntity<ParkingResReportsDTO> getParkingChart(@RequestBody @Valid ParkingReqReportsDTO dto) {
+
+        ParkingResReportsDTO resDTO = clientVacancyService.getParkingChart(dto);
+
+        return ResponseEntity.ok().body(resDTO);
+    }
+
 }

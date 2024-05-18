@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import silvacb.alex.com.apiestacionamento.entity.Vacancy;
 import silvacb.alex.com.apiestacionamento.services.VacancyService;
+import silvacb.alex.com.apiestacionamento.web.dto.ControlVacancyDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.VacancyCreateDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.VacancyResponseDTO;
 import silvacb.alex.com.apiestacionamento.web.dto.mapper.VacancyMapper;
@@ -82,6 +83,24 @@ public class VacancyController {
         return ResponseEntity.ok(VacancyMapper.toDto(vaga));
     }
 
+    @Operation(summary = "Mostra numeros de vagas Livre e Ocupada.", description = "Recurso qtda de vagas Livres e Ocupadas" +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Recurso requisitado com sucesso",
+                            content = @Content(mediaType = " application/json",
+                                    schema = @Schema(implementation = ControlVacancyDTO.class))),
+                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
+                            content = @Content(mediaType = " application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class))
+                    )
+            })
+    @GetMapping("/contador")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ControlVacancyDTO> getByContador() {
+        ControlVacancyDTO dto = vacancyService.contatorDeVagas();
+        return ResponseEntity.ok().body(dto);
+    }
 
 
 }

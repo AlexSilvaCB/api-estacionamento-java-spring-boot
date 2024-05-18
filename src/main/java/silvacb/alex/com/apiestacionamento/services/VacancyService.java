@@ -2,6 +2,7 @@ package silvacb.alex.com.apiestacionamento.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import silvacb.alex.com.apiestacionamento.entity.Vacancy;
@@ -9,8 +10,10 @@ import silvacb.alex.com.apiestacionamento.exception.CodigoUniqueViolationExcepti
 import silvacb.alex.com.apiestacionamento.exception.EntityNotFoundException;
 import silvacb.alex.com.apiestacionamento.exception.VagaLivreException;
 import silvacb.alex.com.apiestacionamento.repository.VacancyRepository;
+import silvacb.alex.com.apiestacionamento.web.dto.ControlVacancyDTO;
 
 import static silvacb.alex.com.apiestacionamento.entity.Vacancy.StatusVacancy.LIVRE;
+import static silvacb.alex.com.apiestacionamento.entity.Vacancy.StatusVacancy.OCUPADA;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +41,18 @@ public class VacancyService {
     public Vacancy buscarPorVagaLivre() {
         return vacancyRepository.findFirstByStatus(LIVRE).orElseThrow(
                 () -> new VagaLivreException());
+    }
+
+    @Transactional(readOnly = true)
+    public ControlVacancyDTO contatorDeVagas() {
+        long free = vacancyRepository.countByStatus(LIVRE);
+        long occupied = vacancyRepository.countByStatus(OCUPADA);
+
+        ControlVacancyDTO freeDto = new ControlVacancyDTO();
+        freeDto.setFreeVancacy(free);
+        freeDto.setVacancyOccupied(occupied);
+
+        return freeDto;
     }
 
 

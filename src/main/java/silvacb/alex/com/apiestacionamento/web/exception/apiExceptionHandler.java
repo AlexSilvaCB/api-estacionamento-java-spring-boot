@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import silvacb.alex.com.apiestacionamento.exception.*;
 
+import java.time.format.DateTimeParseException;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice

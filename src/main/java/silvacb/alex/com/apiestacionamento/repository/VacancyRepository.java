@@ -11,4 +11,6 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
 
     Optional<Vacancy> findFirstByStatus(Vacancy.StatusVacancy statusVacancy);
 
+    long countByStatus(Vacancy.StatusVacancy statusVacancy);
+
 }
