@@ -1,3 +1,8 @@
+<div align="center">
+ <img width="800px" src="screenshot/Login.png" />
+</div>
+
+
 <h1> Projeto Web Responsivo FullStack - Gerenciamento de estacionamento </h1>
 <p> Projeto consiste em aplicar conhecimentos adquiritos em Java, Angular e seus frameworks para a contrução de uma aplicação web responsivo para gerenciamento de estacionamento, 
   aplicando em sua construção padrões de projeto, segurança, testes e boas praticas.
@@ -37,3 +42,16 @@
 
   <li> Postman </li>
   <li> MSQL Workbench </li>
+  
+<h2>Screenshot</h2>
+<div align="center">
+  <p>Tela Inicial Admin</p>
+  <img width="800px" src="screenshot/Admin tela inicial.png" />
+  <p>Tela Inicial Cliente</p>
+  <img width="800px" src="screenshot/Cliente tela Inicial.png" />
+  <p>Admin - CheckIn</p>
+  <img width="800px" src="screenshot/Admin tela inicial checkIn.png" />
+  <p>Admin - Relatório Gráfico</p>
+  <img width="800px" src="screenshot/Relatório.png" />
+</div>
+
